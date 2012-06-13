@@ -1,0 +1,18 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Cookie TempData Provider Sample</h2>
+@using (Html.BeginForm("Submit", "Home"))
+{
+    <p>
+        @Html.Label("name", "Enter your name:")
+        @Html.TextBox("name")
+    </p>
+    <p><button>Submit</button></p>
+}
+@if (TempData["name"] != null)
+{
+    <p>Your name was: @TempData["name"]</p>
+}
+
