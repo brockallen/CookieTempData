@@ -1,4 +1,0 @@
-C:\temp\CookieTempDataDemo\BrockAllen.CookieTempData\bin\Release\BrockAllen.CookieTempData.dll
-C:\temp\CookieTempDataDemo\BrockAllen.CookieTempData\bin\Release\BrockAllen.CookieTempData.pdb
-C:\temp\CookieTempDataDemo\BrockAllen.CookieTempData\obj\Release\BrockAllen.CookieTempData.dll
-C:\temp\CookieTempDataDemo\BrockAllen.CookieTempData\obj\Release\BrockAllen.CookieTempData.pdb

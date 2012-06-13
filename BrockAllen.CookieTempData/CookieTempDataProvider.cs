@@ -15,23 +15,31 @@ namespace BrockAllen.CookieTempData
     {
         const string CookieName = "TempData";
 
-        public IDictionary<string, object> LoadTempData(
-            ControllerContext controllerContext)
-        {
-            var value = GetCookieValue(controllerContext);
-            var bytes = Unprotect(value);
-            value = Decompress(bytes);
-            return Deserialize(value);
-        }
-
         public void SaveTempData(
             ControllerContext controllerContext,
             IDictionary<string, object> values)
         {
+            // convert the temp data into json
             string value = Serialize(values);
+            // compress the json -- it really helps
             var bytes = Compress(value);
+            // sign and encrypt the data via the asp.net machine key
             value = Protect(bytes);
+            // issue the cookie
             IssueCookie(controllerContext, value);
+        }
+
+        public IDictionary<string, object> LoadTempData(
+            ControllerContext controllerContext)
+        {
+            // get the cookie
+            var value = GetCookieValue(controllerContext);
+            // verify and decrypt the value via the asp.net machine key
+            var bytes = Unprotect(value);
+            // decompress to json
+            value = Decompress(bytes);
+            // convert the json back to a dictionary
+            return Deserialize(value);
         }
 
         string GetCookieValue(ControllerContext controllerContext)
@@ -46,20 +54,26 @@ namespace BrockAllen.CookieTempData
 
         void IssueCookie(ControllerContext controllerContext, string value)
         {
+            // if we don't have a value and there's no prior cookie then exit
+            if (value == null && controllerContext.HttpContext.Request.Cookies[CookieName] == null) return;
+
             HttpCookie c = new HttpCookie(CookieName, value)
             {
+                // don't allow javascript access to the cookie
                 HttpOnly = true,
+                // set the path so other apps on the same server don't see the cookie
                 Path = controllerContext.HttpContext.Request.ApplicationPath,
+                // ideally we're always going over SSL, but be flexible for non-SSL apps
                 Secure = controllerContext.HttpContext.Request.IsSecureConnection
             };
+            
             if (value == null)
             {
+                // if we have no data then issue an expired cookie to clear the cookie
                 c.Expires = DateTime.Now.AddMonths(-1);
             }
-            if (value != null || controllerContext.HttpContext.Request.Cookies[CookieName] != null)
-            {
-                controllerContext.HttpContext.Response.Cookies.Add(c);
-            }
+            
+            controllerContext.HttpContext.Response.Cookies.Add(c);
         }
         
         string Protect(byte[] data)

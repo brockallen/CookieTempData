@@ -1,5 +1,0 @@
-c:\temp\CookieTempDataDemo\BrockAllen.CookieTempData\obj\Debug\BrockAllen.CookieTempData.csprojResolveAssemblyReference.cache
-c:\temp\CookieTempDataDemo\BrockAllen.CookieTempData\bin\Debug\BrockAllen.CookieTempData.dll
-c:\temp\CookieTempDataDemo\BrockAllen.CookieTempData\bin\Debug\BrockAllen.CookieTempData.pdb
-c:\temp\CookieTempDataDemo\BrockAllen.CookieTempData\obj\Debug\BrockAllen.CookieTempData.dll
-c:\temp\CookieTempDataDemo\BrockAllen.CookieTempData\obj\Debug\BrockAllen.CookieTempData.pdb
