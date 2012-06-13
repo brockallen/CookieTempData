@@ -14,7 +14,8 @@ namespace BrockAllen.CookieTempData
     public class CookieTempDataProvider : ITempDataProvider
     {
         const string CookieName = "TempData";
-        const string MachineKeyPurpose = "CookieTempDataProvider";
+        const string MachineKeyPurpose = "CookieTempDataProvider:{0}";
+        const string Anonymous = "<anonymous>";
 
         public void SaveTempData(
             ControllerContext controllerContext,
@@ -25,7 +26,7 @@ namespace BrockAllen.CookieTempData
             // compress the json -- it really helps
             var bytes = Compress(value);
             // sign and encrypt the data via the asp.net machine key
-            value = Protect(bytes);
+            value = Protect(bytes, controllerContext.HttpContext);
             // issue the cookie
             IssueCookie(controllerContext, value);
         }
@@ -36,7 +37,7 @@ namespace BrockAllen.CookieTempData
             // get the cookie
             var value = GetCookieValue(controllerContext);
             // verify and decrypt the value via the asp.net machine key
-            var bytes = Unprotect(value);
+            var bytes = Unprotect(value, controllerContext.HttpContext);
             // decompress to json
             value = Decompress(bytes);
             // convert the json back to a dictionary
@@ -76,21 +77,29 @@ namespace BrockAllen.CookieTempData
             
             controllerContext.HttpContext.Response.Cookies.Add(c);
         }
-        
-        string Protect(byte[] data)
+
+        string GetMachineKeyPurpose(HttpContextBase ctx)
+        {
+            return String.Format(MachineKeyPurpose,
+                ctx.User.Identity.IsAuthenticated ? ctx.User.Identity.Name : Anonymous);
+        }
+
+        string Protect(byte[] data, HttpContextBase ctx)
         {
             if (data == null || data.Length == 0) return null;
 
-            var value = MachineKey.Protect(data, MachineKeyPurpose);
+            var purpose = GetMachineKeyPurpose(ctx);
+            var value = MachineKey.Protect(data, purpose);
             return Convert.ToBase64String(value);
         }
 
-        byte[] Unprotect(string value)
+        byte[] Unprotect(string value, HttpContextBase ctx)
         {
             if (String.IsNullOrWhiteSpace(value)) return null;
 
+            var purpose = GetMachineKeyPurpose(ctx);
             var bytes = Convert.FromBase64String(value);
-            return MachineKey.Unprotect(bytes, MachineKeyPurpose);
+            return MachineKey.Unprotect(bytes, purpose);
         }
 
         byte[] Compress(string value)
