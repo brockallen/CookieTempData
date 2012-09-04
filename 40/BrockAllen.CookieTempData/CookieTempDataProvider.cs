@@ -44,10 +44,13 @@ namespace BrockAllen.CookieTempData
 
         string GetCookieValue(ControllerContext controllerContext)
         {
-            HttpCookie c = controllerContext.HttpContext.Request.Cookies[CookieName];
-            if (c != null)
+            if (controllerContext.HttpContext.Request.Cookies.AllKeys.Contains(CookieName))
             {
-                return c.Value;
+                HttpCookie c = controllerContext.HttpContext.Request.Cookies[CookieName];
+                if (c != null)
+                {
+                    return c.Value;
+                }
             }
             return null;
         }
@@ -55,7 +58,7 @@ namespace BrockAllen.CookieTempData
         void IssueCookie(ControllerContext controllerContext, string value)
         {
             // if we don't have a value and there's no prior cookie then exit
-            if (value == null && controllerContext.HttpContext.Request.Cookies[CookieName] == null) return;
+            if (value == null && !controllerContext.HttpContext.Request.Cookies.AllKeys.Contains(CookieName)) return;
 
             HttpCookie c = new HttpCookie(CookieName, value)
             {
