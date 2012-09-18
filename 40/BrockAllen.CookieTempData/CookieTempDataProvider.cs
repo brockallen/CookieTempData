@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
@@ -19,27 +21,29 @@ namespace BrockAllen.CookieTempData
             ControllerContext controllerContext,
             IDictionary<string, object> values)
         {
-            // convert the temp data into json
-            string value = Serialize(values);
-            // compress the json -- it really helps
-            var bytes = Compress(value);
-            // sign and encrypt the data via the asp.net machine key
-            value = Protect(bytes);
-            // issue the cookie
+            var value = GetCookieValueFromDictionary(values);
             IssueCookie(controllerContext, value);
+        }
+
+        private string GetCookieValueFromDictionary(IDictionary<string, object> values)
+        {
+            byte[] bytes = SerializeWithBinaryFormatter(values);
+            bytes = Compress(bytes);
+            return Protect(bytes);
         }
 
         public IDictionary<string, object> LoadTempData(
             ControllerContext controllerContext)
         {
-            // get the cookie
             var value = GetCookieValue(controllerContext);
-            // verify and decrypt the value via the asp.net machine key
+            return GetDictionaryFromCookieValue(value);
+        }
+
+        private IDictionary<string, object> GetDictionaryFromCookieValue(string value)
+        {
             var bytes = Unprotect(value);
-            // decompress to json
-            value = Decompress(bytes);
-            // convert the json back to a dictionary
-            return Deserialize(value);
+            bytes = Decompress(bytes);
+            return DeserializeWithBinaryFormatter(bytes);
         }
 
         string GetCookieValue(ControllerContext controllerContext)
@@ -93,11 +97,10 @@ namespace BrockAllen.CookieTempData
             return MachineKey.Decode(value, MachineKeyProtection.All);
         }
 
-        byte[] Compress(string value)
+        byte[] Compress(byte[] data)
         {
-            if (value == null) return null;
+            if (data == null || data.Length == 0) return null;
 
-            var data = Encoding.UTF8.GetBytes(value);
             using (var input = new MemoryStream(data))
             {
                 using (var output = new MemoryStream())
@@ -112,7 +115,7 @@ namespace BrockAllen.CookieTempData
             }
         }
 
-        string Decompress(byte[] data)
+        byte[] Decompress(byte[] data)
         {
             if (data == null || data.Length == 0) return null;
             
@@ -126,25 +129,50 @@ namespace BrockAllen.CookieTempData
                     }
                     
                     var result = output.ToArray();
-                    return Encoding.UTF8.GetString(result);
+                    return result;
                 }
             }
         }
 
-        string Serialize(IDictionary<string, object> data)
+        byte[] SerializeWithBinaryFormatter(IDictionary<string, object> data)
         {
             if (data == null || data.Keys.Count == 0) return null;
 
-            JavaScriptSerializer ser = new JavaScriptSerializer();
-            return ser.Serialize(data);
+            var f = new BinaryFormatter();
+            using (var ms = new MemoryStream())
+            {
+                f.Serialize(ms, data);
+                ms.Seek(0, SeekOrigin.Begin);
+                return ms.ToArray();
+            }
         }
 
-        IDictionary<string, object> Deserialize(string data)
+        IDictionary<string, object> DeserializeWithBinaryFormatter(byte[] data)
         {
-            if (String.IsNullOrWhiteSpace(data)) return null;
+            if (data == null || data.Length == 0) return null;
 
-            JavaScriptSerializer ser = new JavaScriptSerializer();
-            return ser.Deserialize<IDictionary<string, object>>(data);
+            var f = new BinaryFormatter();
+            using (var ms = new MemoryStream(data))
+            {
+                var obj = f.Deserialize(ms);
+                return obj as IDictionary<string, object>;
+            }
+        }
+
+        string SerializeWithJsonFormatter(IDictionary<string, object> data)
+        {
+            if (data == null || data.Keys.Count == 0) return null;
+
+            var s = new JavaScriptSerializer();
+            return s.Serialize(data);
+        }
+
+        IDictionary<string, object> DeserializeWithJsonFormatter(string data)
+        {
+            if (data == null || data.Length == 0) return null;
+
+            var s = new JavaScriptSerializer();
+            return s.Deserialize<IDictionary<string, object>>(data);
         }
     }
 }

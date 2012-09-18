@@ -11,8 +11,8 @@
     </p>
     <p><button>Submit</button></p>
 }
-@if (TempData["name"] != null)
+@if (ViewBag.Name != null)
 {
-    <p>Your name was: @TempData["name"]</p>
+    <p>Your name was: @ViewBag.Name</p>
 }
 
