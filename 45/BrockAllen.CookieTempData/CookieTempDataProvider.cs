@@ -5,6 +5,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Security.Cryptography;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
@@ -75,6 +76,11 @@ namespace BrockAllen.CookieTempData
             controllerContext.HttpContext.Response.Cookies.Add(c);
         }
 
+        string GetAnonMachineKeyPurpose()
+        {
+            return String.Format(MachineKeyPurpose, Anonymous);
+        }
+
         string GetMachineKeyPurpose(HttpContextBase ctx)
         {
             return String.Format(MachineKeyPurpose,
@@ -96,7 +102,14 @@ namespace BrockAllen.CookieTempData
 
             var purpose = GetMachineKeyPurpose(ctx);
             var bytes = Convert.FromBase64String(value);
-            return MachineKey.Unprotect(bytes, purpose);
+            try
+            {
+                return MachineKey.Unprotect(bytes, purpose);
+            }
+            catch (CryptographicException)
+            {
+                return MachineKey.Unprotect(bytes, GetAnonMachineKeyPurpose());
+            }
         }
 
         byte[] Compress(byte[] data)
