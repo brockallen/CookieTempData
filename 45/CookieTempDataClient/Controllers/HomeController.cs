@@ -21,11 +21,24 @@ namespace CookieTempDataDemo.Controllers
         [HttpPost]
         public ActionResult Submit(string name)
         {
+            if (String.IsNullOrWhiteSpace(name))
+            {
+                ModelState.AddModelError("name", "Name was required.");
+                TempData["error"] = ModelState;
+                return RedirectToAction("Error");
+            }
+            
             var data = new Data();
             data.Name = name;
             data.Self = data;
             TempData["data"] = data;
             return RedirectToAction("Index");
+        }
+
+        public ActionResult Error()
+        {
+            var errors = TempData["error"] as ModelStateDictionary;
+            return View("Error", errors);
         }
     }
 

@@ -1,0 +1,13 @@
+﻿@model ModelStateDictionary
+
+@{
+    ViewBag.Title = "Error";
+}
+
+<h2>Errors</h2>
+<ul>
+    @foreach (var error in Model)
+    {
+        <li>@error.Key, @error.Value.Value.AttemptedValue, @error.Value.Errors.First().ErrorMessage</li>
+    }
+</ul>
