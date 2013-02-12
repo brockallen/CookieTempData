@@ -3,11 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using CookieTempDataDemo.Models;
 
 namespace CookieTempDataDemo.Controllers
 {
     public class HomeController : Controller
     {
+        IFoo foo;
+
+        public HomeController(IFoo foo)
+        {
+            this.foo = foo;
+        }
+
         public ActionResult Index()
         {
             var data = TempData["data"] as Data;
