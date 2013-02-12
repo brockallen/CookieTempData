@@ -10,20 +10,27 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		readme = readme
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{901A43D2-58F2-490B-975C-DD8720BEE449}"
+	ProjectSection(SolutionItems) = preProject
+		.nuget\NuGet.Config = .nuget\NuGet.Config
+		.nuget\NuGet.exe = .nuget\NuGet.exe
+		.nuget\NuGet.targets = .nuget\NuGet.targets
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{91CDA80A-5D9D-45EB-A587-2C693DEFCA4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{91CDA80A-5D9D-45EB-A587-2C693DEFCA4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{91CDA80A-5D9D-45EB-A587-2C693DEFCA4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{91CDA80A-5D9D-45EB-A587-2C693DEFCA4A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E7471BD3-3A4B-4FC4-806C-D4BD4260FF98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E7471BD3-3A4B-4FC4-806C-D4BD4260FF98}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E7471BD3-3A4B-4FC4-806C-D4BD4260FF98}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E7471BD3-3A4B-4FC4-806C-D4BD4260FF98}.Release|Any CPU.Build.0 = Release|Any CPU
+		{91CDA80A-5D9D-45EB-A587-2C693DEFCA4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91CDA80A-5D9D-45EB-A587-2C693DEFCA4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91CDA80A-5D9D-45EB-A587-2C693DEFCA4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91CDA80A-5D9D-45EB-A587-2C693DEFCA4A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
