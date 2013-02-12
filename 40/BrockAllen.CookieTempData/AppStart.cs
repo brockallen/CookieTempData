@@ -21,7 +21,7 @@ namespace BrockAllen.CookieTempData
 
     public class SetFactoryModule : IHttpModule
     {
-        static volatile bool hasRun = false;
+        static bool hasRun = false;
         static object theLock = new object();
         
         public void Init(HttpApplication app)
@@ -36,9 +36,6 @@ namespace BrockAllen.CookieTempData
                 {
                     ControllerBuilder.Current.SetControllerFactory(new CookieTempDataControllerFactory(currentFactory));
                 }
-
-                // because i'm paranoid
-                Thread.MemoryBarrier();
 
                 hasRun = true;
             }
