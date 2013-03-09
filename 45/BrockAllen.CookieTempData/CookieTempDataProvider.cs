@@ -16,6 +16,8 @@ namespace BrockAllen.CookieTempData
 {
     public class CookieTempDataProvider : ITempDataProvider
     {
+        const string AnonymousCookieValuePrefix = "_";
+        const string AuthenticatedCookieValuePrefix = ".";
         const string CookieName = "TempData";
         const string MachineKeyPurpose = "CookieTempDataProvider:{0}";
         const string Anonymous = "<anonymous>";
@@ -35,8 +37,17 @@ namespace BrockAllen.CookieTempData
         {
             var value = GetCookieValue(controllerContext);
             var bytes = Unprotect(value, controllerContext.HttpContext);
-            bytes = Decompress(bytes);
-            return DeserializeWithBinaryFormatter(bytes);
+            if (bytes == null && value != null)
+            {
+                // failure, so remove cookie
+                IssueCookie(controllerContext, null);
+                return null;
+            }
+            else
+            {
+                bytes = Decompress(bytes);
+                return DeserializeWithBinaryFormatter(bytes);
+            }
         }
 
         string GetCookieValue(ControllerContext controllerContext)
@@ -83,8 +94,28 @@ namespace BrockAllen.CookieTempData
 
         string GetMachineKeyPurpose(HttpContextBase ctx)
         {
-            return String.Format(MachineKeyPurpose,
-                ctx.User.Identity.IsAuthenticated ? ctx.User.Identity.Name : Anonymous);
+            if (!ctx.User.Identity.IsAuthenticated) return GetAnonMachineKeyPurpose();
+            return String.Format(MachineKeyPurpose, ctx.User.Identity.Name);
+        }
+        
+        string GetMachineKeyPurposeFromPrefix(string prefix, HttpContextBase ctx)
+        {
+            if (prefix == AnonymousCookieValuePrefix)
+            {
+                return GetAnonMachineKeyPurpose();
+            }
+            if (prefix == AuthenticatedCookieValuePrefix && ctx.User.Identity.IsAuthenticated)
+            {
+                return String.Format(MachineKeyPurpose, ctx.User.Identity.Name);
+            }
+            return null;
+        }
+        
+        string GetMachineKeyPrefix(HttpContextBase ctx)
+        {
+            return (ctx.User.Identity.IsAuthenticated) ?
+                AuthenticatedCookieValuePrefix :
+                AnonymousCookieValuePrefix;
         }
 
         string Protect(byte[] data, HttpContextBase ctx)
@@ -93,14 +124,20 @@ namespace BrockAllen.CookieTempData
 
             var purpose = GetMachineKeyPurpose(ctx);
             var value = MachineKey.Protect(data, purpose);
-            return Convert.ToBase64String(value);
+
+            var prefix = GetMachineKeyPrefix(ctx);
+            return prefix + Convert.ToBase64String(value);
         }
 
         byte[] Unprotect(string value, HttpContextBase ctx)
         {
             if (String.IsNullOrWhiteSpace(value)) return null;
 
-            var purpose = GetMachineKeyPurpose(ctx);
+            var prefix = value[0].ToString();
+            var purpose = GetMachineKeyPurposeFromPrefix(prefix, ctx);
+            if (purpose == null) return null;
+
+            value = value.Substring(1);
             var bytes = Convert.FromBase64String(value);
             try
             {
@@ -108,7 +145,7 @@ namespace BrockAllen.CookieTempData
             }
             catch (CryptographicException)
             {
-                return MachineKey.Unprotect(bytes, GetAnonMachineKeyPurpose());
+                return null;
             }
         }
 
