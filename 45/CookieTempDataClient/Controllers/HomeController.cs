@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using CookieTempDataDemo.Models;
+using System.Web.Security;
 
 namespace CookieTempDataDemo.Controllers
 {
@@ -27,7 +28,7 @@ namespace CookieTempDataDemo.Controllers
         }
 
         [HttpPost]
-        public ActionResult Submit(string name)
+        public ActionResult Index(string name, string username)
         {
             if (String.IsNullOrWhiteSpace(name))
             {
@@ -40,6 +41,12 @@ namespace CookieTempDataDemo.Controllers
             data.Name = name;
             data.Self = data;
             TempData["data"] = data;
+
+            if (username != null)
+            {
+                FormsAuthentication.SetAuthCookie(username, false);
+            }
+            
             return RedirectToAction("Index");
         }
 
