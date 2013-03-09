@@ -6,9 +6,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrockAllen.CookieTempData", "BrockAllen.CookieTempData\BrockAllen.CookieTempData.csproj", "{91CDA80A-5D9D-45EB-A587-2C693DEFCA4A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B88B6C88-6277-40BB-89AA-E714228CA3AF}"
-	ProjectSection(SolutionItems) = preProject
-		readme = readme
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{901A43D2-58F2-490B-975C-DD8720BEE449}"
 	ProjectSection(SolutionItems) = preProject
