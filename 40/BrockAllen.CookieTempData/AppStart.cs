@@ -21,24 +21,17 @@ namespace BrockAllen.CookieTempData
 
     public class SetFactoryModule : IHttpModule
     {
-        static bool hasRun = false;
-        static object theLock = new object();
+        static SetFactoryModule()
+        {
+            var currentFactory = ControllerBuilder.Current.GetControllerFactory();
+            if (!(currentFactory is CookieTempDataControllerFactory))
+            {
+                ControllerBuilder.Current.SetControllerFactory(new CookieTempDataControllerFactory(currentFactory));
+            }
+        }
         
         public void Init(HttpApplication app)
         {
-            if (hasRun) return;
-            lock (theLock)
-            {
-                if (hasRun) return;
-
-                var currentFactory = ControllerBuilder.Current.GetControllerFactory();
-                if (!(currentFactory is CookieTempDataControllerFactory))
-                {
-                    ControllerBuilder.Current.SetControllerFactory(new CookieTempDataControllerFactory(currentFactory));
-                }
-
-                hasRun = true;
-            }
         }
 
         public void Dispose()
