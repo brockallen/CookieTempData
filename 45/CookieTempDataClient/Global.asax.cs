@@ -33,6 +33,7 @@ namespace CookieTempDataDemo
 
         protected void Application_Start()
         {
+            BrockAllen.CookieTempData.CookieTempDataProvider.ValidationException += CookieTempDataProvider_ValidationException;
             AreaRegistration.RegisterAllAreas();
 
             // Use LocalDB for Entity Framework by default
@@ -40,6 +41,11 @@ namespace CookieTempDataDemo
 
             RegisterGlobalFilters(GlobalFilters.Filters);
             RegisterRoutes(RouteTable.Routes);
+        }
+
+        void CookieTempDataProvider_ValidationException(object sender, Exception e)
+        {
+
         }
     }
 }
