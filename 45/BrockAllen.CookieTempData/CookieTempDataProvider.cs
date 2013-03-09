@@ -16,6 +16,8 @@ namespace BrockAllen.CookieTempData
 {
     public class CookieTempDataProvider : ITempDataProvider
     {
+        public static event EventHandler<Exception> ValidationException;
+
         const string AnonymousCookieValuePrefix = "_";
         const string AuthenticatedCookieValuePrefix = ".";
         const string CookieName = "TempData";
@@ -143,8 +145,12 @@ namespace BrockAllen.CookieTempData
             {
                 return MachineKey.Unprotect(bytes, purpose);
             }
-            catch (CryptographicException)
+            catch (CryptographicException ex)
             {
+                if (ValidationException != null)
+                {
+                    ValidationException(this, ex);
+                }
                 return null;
             }
         }
