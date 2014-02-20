@@ -96,7 +96,7 @@ namespace BrockAllen.CookieTempData
 
         string GetMachineKeyPurpose(HttpContextBase ctx)
         {
-            if (ctx.User.Identity == null || !ctx.User.Identity.IsAuthenticated) return GetAnonMachineKeyPurpose();
+            if (ctx.User == null || ctx.User.Identity == null || !ctx.User.Identity.IsAuthenticated) return GetAnonMachineKeyPurpose();
             return String.Format(MachineKeyPurpose, ctx.User.Identity == null ? "" : ctx.User.Identity.Name);
         }
         
@@ -115,6 +115,8 @@ namespace BrockAllen.CookieTempData
         
         string GetMachineKeyPrefix(HttpContextBase ctx)
         {
+            if (ctx.User == null || ctx.User.Identity == null) return AnonymousCookieValuePrefix;
+
             return (ctx.User.Identity.IsAuthenticated) ?
                 AuthenticatedCookieValuePrefix :
                 AnonymousCookieValuePrefix;
