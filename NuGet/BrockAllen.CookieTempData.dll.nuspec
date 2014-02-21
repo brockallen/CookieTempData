@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>BrockAllen.CookieTempData.dll</id>
-    <version>1.2.1</version>
+    <version>1.2.2</version>
     <authors>BrockAllen</authors>
     <owners>BrockAllen</owners>
     <licenseUrl>https://github.com/brockallen/CookieTempData/blob/master/45/license.txt</licenseUrl>
@@ -11,7 +11,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Cookie-based TempData provider for ASP.NET MVC</description>
     <releaseNotes>Ignore cookies that were issued for an authenticated user, but user is no longer logged in.</releaseNotes>
-    <copyright>Copyright 2013</copyright>
+    <copyright>Copyright 2014</copyright>
     <tags>MVC TempData</tags>
     <dependencies>
     </dependencies>
