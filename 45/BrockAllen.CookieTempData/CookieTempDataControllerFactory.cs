@@ -8,7 +8,7 @@ using System.Web.SessionState;
 
 namespace BrockAllen.CookieTempData
 {
-    class CookieTempDataControllerFactory : IControllerFactory
+    public class CookieTempDataControllerFactory : IControllerFactory
     {
         IControllerFactory _inner;
         public CookieTempDataControllerFactory(IControllerFactory inner)

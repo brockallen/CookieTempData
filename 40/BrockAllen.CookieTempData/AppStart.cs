@@ -6,6 +6,7 @@ using System.Threading;
 using System.Web;
 using System.Web.Mvc;
 using Microsoft.Web.Infrastructure.DynamicModuleHelper;
+using System.Configuration;
 
 [assembly: PreApplicationStartMethod(typeof(BrockAllen.CookieTempData.AppStart), "Start")]
 
@@ -15,7 +16,10 @@ namespace BrockAllen.CookieTempData
     {
         public static void Start()
         {
-            DynamicModuleUtility.RegisterModule(typeof(SetFactoryModule));
+            if (!"true".Equals(ConfigurationManager.AppSettings["cookieTempData:disable"]))
+            {
+                DynamicModuleUtility.RegisterModule(typeof(SetFactoryModule));
+            }
         }
     }
 
